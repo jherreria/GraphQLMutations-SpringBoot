@@ -10,16 +10,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jorgeherreria.mutations.model.Book;
 import com.jorgeherreria.mutations.model.BookInput;
-import com.jorgeherreria.mutations.model.UpdateBookInput;
+import com.jorgeherreria.mutations.model.Review;
+import com.jorgeherreria.mutations.model.ReviewInput;
+import com.jorgeherreria.mutations.model.BookInput4Update;
 import com.jorgeherreria.mutations.repository.BookReposotory;
+import com.jorgeherreria.mutations.repository.ReviewRepository;
 
 @RestController
 @RequestMapping("/api/books")
 public class BookController {
   private final BookReposotory bookReposotory;
+  private final ReviewRepository reviewRepo;
 
-  public BookController(BookReposotory bookReposotory) {
+  public BookController(BookReposotory bookReposotory, ReviewRepository reviewRepo) {
     this.bookReposotory = bookReposotory;
+    this.reviewRepo = reviewRepo;
   }
 
   @QueryMapping
@@ -45,12 +50,21 @@ public class BookController {
   }
 
   @MutationMapping
-  public Book updateBook(@Argument UpdateBookInput book) {
+  public Book updateBook(@Argument BookInput4Update book) {
     Book existing = bookReposotory.getReferenceById(book.id());
     existing.setAuthor(chooser(existing.getAuthor(), book.author()));
     existing.setPages(chooser(existing.getPages(), book.pages()));
     existing.setTitle(chooser(existing.getTitle(), book.title()));
     return bookReposotory.save(existing);
+  }
+
+  @MutationMapping
+  public Book addReview(@Argument(name = "review") ReviewInput iReview) {
+    Book book = bookReposotory.getReferenceById(iReview.book_id());
+    Review review = reviewRepo.save(new Review(iReview.title(), iReview.comment()));
+    review = reviewRepo.save(review);
+    book.getReviews().add(review);
+    return bookReposotory.save(book);
   }
 
   String chooser(String oldValue, String newValue) {

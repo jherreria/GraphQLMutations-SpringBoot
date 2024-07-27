@@ -20,7 +20,8 @@ type Mutation {
   createBook(title: String, pages: Int, author: String):Book
   addBook(book: BookInput!): Book
   batchCreate(books:[BookInput!]!):[Book]
-  updateBook(book:UpdateBookInput): Book
+  updateBook(book:BookInput4Update): Book
+  addReview(review: ReviewInput): Book
 }
 
 input BookInput {
@@ -29,9 +30,15 @@ input BookInput {
   author: String
 }
 
-input UpdateBookInput {
+input BookInput4Update {
   id: ID!
   title: String
   pages: Int
   author: String
+}
+
+input ReviewInput {
+  title: String!
+  comment: String
+  book_id: ID!
 }
