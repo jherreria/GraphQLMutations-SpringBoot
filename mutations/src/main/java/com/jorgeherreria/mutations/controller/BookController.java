@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jorgeherreria.mutations.model.Book;
 import com.jorgeherreria.mutations.model.BookInput;
+import com.jorgeherreria.mutations.model.UpdateBookInput;
 import com.jorgeherreria.mutations.repository.BookReposotory;
 
 @RestController
@@ -41,6 +42,27 @@ public class BookController {
   @MutationMapping
   public List<Book> batchCreate(@Argument List<BookInput> books) {
     return bookReposotory.saveAll(books.stream().map(book -> new Book(book)).toList());
+  }
+
+  @MutationMapping
+  public Book updateBook(@Argument UpdateBookInput book) {
+    Book existing = bookReposotory.getReferenceById(book.id());
+    existing.setAuthor(chooser(existing.getAuthor(), book.author()));
+    existing.setPages(chooser(existing.getPages(), book.pages()));
+    existing.setTitle(chooser(existing.getTitle(), book.title()));
+    return bookReposotory.save(existing);
+  }
+
+  String chooser(String oldValue, String newValue) {
+    return (notEmpty(newValue)) ? newValue : oldValue;
+  }
+
+  Integer chooser(Integer oldValue, Integer newValue) {
+    return (newValue != null) ? newValue : oldValue;
+  }
+
+  public static boolean notEmpty(String str) {
+    return str != null && !str.isEmpty();
   }
 
 };
