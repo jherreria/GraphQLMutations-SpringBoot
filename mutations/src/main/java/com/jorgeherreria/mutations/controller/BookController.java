@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jorgeherreria.mutations.exception.BookNotFoundException;
 import com.jorgeherreria.mutations.model.Book;
 import com.jorgeherreria.mutations.model.BookInput;
-import com.jorgeherreria.mutations.model.BookInput4Update;
+import com.jorgeherreria.mutations.model.BookUpdateInput;
 import com.jorgeherreria.mutations.model.Review;
 import com.jorgeherreria.mutations.model.ReviewInput;
 import com.jorgeherreria.mutations.repository.BookRepository;
@@ -56,7 +56,7 @@ public class BookController {
   }
 
   @MutationMapping
-  public Book updateBook(@Argument BookInput4Update bookInput) {
+  public Book updateBook(@Argument BookUpdateInput bookInput) {
     Book existingBook = bookRepository.findById(bookInput.id())
         .orElseThrow(BookNotFoundException::bookNotFound);
     existingBook.setAuthor(choose(existingBook.getAuthor(), bookInput.author()));
