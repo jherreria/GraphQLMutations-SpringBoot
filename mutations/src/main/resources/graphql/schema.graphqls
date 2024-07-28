@@ -1,5 +1,7 @@
 type Query {
   findAllBooks:[Book]
+  findBookById(id: Int!):Book
+  findAllReviews:[Review]
 }
 
 type Book {
@@ -21,7 +23,8 @@ type Mutation {
   addBook(book: BookInput!): Book
   batchCreate(books:[BookInput!]!):[Book]
   updateBook(book:BookInput4Update): Book
-  addReview(review: ReviewInput): Book
+  addReview(review: ReviewInput): Book  
+  deleteReview(id: ID!): String
 }
 
 input BookInput {
